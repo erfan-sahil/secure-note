@@ -5,15 +5,20 @@ const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const createError = require("http-errors");
 const { errorResponse } = require("./helper/response");
+const { userRouter } = require("./routes/user.route");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 100,
 });
 
+app.use(express.json());
 app.use(limiter);
 app.use(helmet());
 app.use(morgan("dev"));
+
+//routers
+app.use("/api/v1/user", userRouter);
 
 app.get("/test", (req, res) => {
   res.send("Test Secure note app");
