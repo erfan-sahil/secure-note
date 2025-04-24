@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
       required: [true, "Name is required"],
       minlength: [3, "Name must be at least 3 character"],
-      maxlenght: [30, "Name should be at less than 30 character"],
+      maxlenght: [30, "Name should be less than 30 character"],
     },
     email: {
       type: String,
@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       required: [true, "Password is required"],
-      minlength: [3, "Name must be at least 6 character"],
+      minlength: [6, "Name must be at least 6 character"],
       validate: {
         validator: function (v) {
           return passwordRegex.test(v);
