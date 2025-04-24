@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const createError = require("http-errors");
 const { errorResponse } = require("./helper/response");
 const { userRouter } = require("./routes/user.route");
+const { seedRouter } = require("./routes/seedUser.route");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -18,6 +19,7 @@ app.use(helmet());
 app.use(morgan("dev"));
 
 //routers
+app.use("/api/v1/seed", seedRouter);
 app.use("/api/v1/user", userRouter);
 
 app.get("/test", (req, res) => {
