@@ -39,9 +39,32 @@ const getSingleUser = async (req, res, next) => {
     next(error);
   }
 };
+const deleteUser = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return next(createError(404, "User not available"));
+    } else {
+      const deletedUser = await userModel.findByIdAndDelete(userId);
+      if (!deletedUser) {
+        return next(createError(404, "Cannot delete user. Please try again"));
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   registerUser,
   getUsers,
   getSingleUser,
+  deleteUser,
 };
