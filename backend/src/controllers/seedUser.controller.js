@@ -1,9 +1,9 @@
+const { data } = require("../fakeData");
 const { userModel } = require("../models/user.model");
-const users = require("../fakeData.js");
 const seedUser = async (req, res, next) => {
-  console.log(users);
   try {
-    const seedUser = await userModel.insertMany(users);
+    const seedUser = await userModel.insertMany(data.users);
+    console.log("seed user---------", seedUser);
     if (!seedUser) {
       return console.log("Cannot seed any user");
     }
