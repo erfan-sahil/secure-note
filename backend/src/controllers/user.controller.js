@@ -8,7 +8,7 @@ const getUsers = async (req, res, next) => {
   try {
     const users = await userModel.find({});
     if (users.length === 0) {
-      return next(createError(404, "No users found"));
+      return next(createError(404, "No users available"));
     }
 
     res.status(200).json({
@@ -17,11 +17,31 @@ const getUsers = async (req, res, next) => {
       payload: users,
     });
   } catch (error) {
-    next(createError(400, "Cannot get users"));
+    next(error);
+  }
+};
+
+const getSingleUser = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return next(createError(404, "User not available"));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User found successfully",
+      payload: user,
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
 module.exports = {
   registerUser,
   getUsers,
+  getSingleUser,
 };
