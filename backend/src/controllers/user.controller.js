@@ -1,8 +1,30 @@
 const createError = require("http-errors");
 const { userModel } = require("../models/user.model");
 
-const registerUser = (req, res, next) => {
-  res.status(200).json({ msg: "register user" });
+const registerUser = async (req, res, next) => {
+  try {
+    const { name, email, password } = req.body;
+
+    const userData = {
+      name,
+      email,
+      password,
+    };
+
+    const existUser = await userModel.exists({ email });
+
+    if (existUser) {
+      return next(createError(400, "User is already exist. Please login"));
+    }
+
+    const newUser = await userModel.create(userData);
+
+    res
+      .status(200)
+      .json({ msg: "User verification email send", payload: newUser });
+  } catch (error) {
+    next(error);
+  }
 };
 const getUsers = async (req, res, next) => {
   try {
