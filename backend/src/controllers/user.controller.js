@@ -59,6 +59,12 @@ const verifyUser = async (req, res, next) => {
       );
     }
 
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: 3600 * 1000,
+    });
+
     res
       .status(200)
       .json({ msg: "User successfully registered", payload: newUser });
