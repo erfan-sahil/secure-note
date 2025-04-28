@@ -7,6 +7,7 @@ const createError = require("http-errors");
 const { errorResponse } = require("./helper/response");
 const { userRouter } = require("./routes/user.route");
 const { seedRouter } = require("./routes/seedUser.route");
+const cookieParser = require("cookie-parser");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -15,6 +16,7 @@ const limiter = rateLimit({
 
 app.use(express.json());
 app.use(express.urlencoded());
+app.use(cookieParser());
 app.use(limiter);
 app.use(helmet());
 app.use(morgan("dev"));
@@ -36,8 +38,8 @@ app.use((req, res, next) => {
 //server error
 app.use((err, req, res, next) => {
   return errorResponse(res, {
-    statusCode: err.status,
-    errorMessage: err.message,
+    statusCode: err.status || 500,
+    errorMessage: err.message || "Internal server error",
   });
 });
 module.exports = {

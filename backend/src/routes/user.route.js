@@ -6,13 +6,14 @@ const {
   deleteUser,
   verifyUser,
 } = require("../controllers/user.controller");
+const { isLoggedin } = require("../middlewares/isLoggedin");
 const userRouter = express.Router();
 
 userRouter.post("/register", registerUser);
 userRouter.post("/verify", verifyUser);
-userRouter.get("/", getUsers);
-userRouter.get("/:id", getSingleUser);
-userRouter.delete("/:id", deleteUser);
+userRouter.get("/", isLoggedin, getUsers);
+userRouter.get("/:id", isLoggedin, getSingleUser);
+userRouter.delete("/:id", isLoggedin, deleteUser);
 
 module.exports = {
   userRouter,

@@ -37,7 +37,7 @@ const registerUser = async (req, res, next) => {
       .status(200)
       .json({ msg: "User verification email send", payload: accessToken });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 const verifyUser = async (req, res, next) => {
@@ -50,7 +50,6 @@ const verifyUser = async (req, res, next) => {
       return next(createError(400, "Invalid token or secret key"));
     }
 
-    console.log("decoded----", decoded);
     const newUser = await userModel.create(decoded);
 
     if (!newUser) {
@@ -69,7 +68,7 @@ const verifyUser = async (req, res, next) => {
       .status(200)
       .json({ msg: "User successfully registered", payload: newUser });
   } catch (error) {
-    return next(error);
+    next(error);
   }
 };
 
