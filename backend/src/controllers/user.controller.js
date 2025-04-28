@@ -1,6 +1,8 @@
 const createError = require("http-errors");
 const { userModel } = require("../models/user.model");
 const { generateAccessToken } = require("../helper/generateAccessToken");
+const sendEmail = require("../helper/sendEmail");
+const { baseURL } = require("../secret");
 
 const registerUser = async (req, res, next) => {
   try {
@@ -19,13 +21,20 @@ const registerUser = async (req, res, next) => {
     }
 
     const accessToken = await generateAccessToken(userData);
-    console.log(accessToken);
 
-    const newUser = await userModel.create(userData);
+    const verificationLink = `${baseURL}/auth/verify/${accessToken}`;
+
+    const emailForm = {
+      to: email,
+      subject: "Verify Your Email",
+      text: `Please verify your email by clicking this link: ${verificationLink}`,
+    };
+
+    await sendEmail(emailForm, next);
 
     res
       .status(200)
-      .json({ msg: "User verification email send", payload: newUser });
+      .json({ msg: "User verification email send", payload: accessToken });
   } catch (error) {
     next(error);
   }
