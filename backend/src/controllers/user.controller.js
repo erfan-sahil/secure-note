@@ -1,5 +1,6 @@
 const createError = require("http-errors");
 const { userModel } = require("../models/user.model");
+const { generateAccessToken } = require("../helper/generateAccessToken");
 
 const registerUser = async (req, res, next) => {
   try {
@@ -16,6 +17,9 @@ const registerUser = async (req, res, next) => {
     if (existUser) {
       return next(createError(400, "User is already exist. Please login"));
     }
+
+    const accessToken = await generateAccessToken(userData);
+    console.log(accessToken);
 
     const newUser = await userModel.create(userData);
 
