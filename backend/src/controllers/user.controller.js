@@ -6,15 +6,53 @@ const registerUser = (req, res, next) => {
 };
 const getUsers = async (req, res, next) => {
   try {
-    const users = await userModel.find({});
+    const search = req.query.search;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    if (isNaN(page) || page < 1 || isNaN(limit) || limit < 1) {
+      next(createError(400, "Invalid page or limit"));
+    }
+
+    const skip = (page - 1) * limit;
+
+    const query = {};
+
+    if (search) {
+      const sanitizedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const searchRegex = new RegExp(sanitizedSearch, "i");
+      query.$or = [{ name: searchRegex }, { email: searchRegex }];
+    }
+
+    const users = await userModel
+      .find(query)
+      .select("-password")
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const total = await userModel.countDocuments(query);
+
     if (users.length === 0) {
       return next(createError(404, "No users available"));
     }
 
+    const totalPages = Math.ceil(total / limit);
+    const previousPage = page > 1 ? page - 1 : null;
+    const nextPage = page < totalPages ? page + 1 : null;
+
     res.status(200).json({
       success: true,
       message: "Users found successfully",
-      payload: users,
+      payload: {
+        users,
+        pagination: {
+          currentPage: page,
+          limit: limit,
+          totalPages: totalPages,
+          previousPage: previousPage,
+          nextPage: nextPage,
+        },
+      },
     });
   } catch (error) {
     next(error);
