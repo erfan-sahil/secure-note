@@ -2,7 +2,8 @@ const createError = require("http-errors");
 const { userModel } = require("../models/user.model");
 const { generateAccessToken } = require("../helper/generateAccessToken");
 const sendEmail = require("../helper/sendEmail");
-const { baseURL } = require("../secret");
+const { baseURL, accessSecretKey } = require("../secret");
+const jwt = require("jsonwebtoken");
 
 const registerUser = async (req, res, next) => {
   try {
@@ -39,6 +40,33 @@ const registerUser = async (req, res, next) => {
     next(error);
   }
 };
+const verifyUser = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+    console.log("token------", token);
+    const decoded = jwt.verify(token, accessSecretKey);
+
+    if (!decoded) {
+      return next(createError(400, "Invalid token or secret key"));
+    }
+
+    console.log("decoded----", decoded);
+    const newUser = await userModel.create(decoded);
+
+    if (!newUser) {
+      return next(
+        createError(400, "User registration failed. Please try again")
+      );
+    }
+
+    res
+      .status(200)
+      .json({ msg: "User successfully registered", payload: newUser });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 const getUsers = async (req, res, next) => {
   try {
     const search = req.query.search;
@@ -140,4 +168,5 @@ module.exports = {
   getUsers,
   getSingleUser,
   deleteUser,
+  verifyUser,
 };
