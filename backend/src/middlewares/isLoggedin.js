@@ -12,6 +12,9 @@ const isLoggedin = async (req, res, next) => {
     }
     next();
   } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      throw createError(401, "Token has expired");
+    }
     next(error);
   }
 };
