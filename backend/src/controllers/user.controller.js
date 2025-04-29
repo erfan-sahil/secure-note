@@ -43,7 +43,6 @@ const registerUser = async (req, res, next) => {
 const verifyUser = async (req, res, next) => {
   try {
     const { token } = req.body;
-    console.log("token------", token);
     const decoded = jwt.verify(token, accessSecretKey);
 
     if (!decoded) {
@@ -169,21 +168,9 @@ const deleteUser = async (req, res, next) => {
 };
 const updateUser = async (req, res, next) => {
   try {
-    const userId = req.params.id;
-    const user = await userModel.findById(userId);
-
-    if (!user) {
-      return next(createError(404, "User not available"));
-    } else {
-      const deletedUser = await userModel.findByIdAndDelete(userId);
-      if (!deletedUser) {
-        return next(createError(404, "Cannot delete user. Please try again"));
-      }
-    }
-
     res.status(200).json({
       success: true,
-      message: "User deleted successfully",
+      message: "User updated successfully",
     });
   } catch (error) {
     next(error);
