@@ -8,6 +8,7 @@ const { errorResponse } = require("./helper/response");
 const { userRouter } = require("./routes/user.route");
 const { seedRouter } = require("./routes/seedUser.route");
 const cookieParser = require("cookie-parser");
+const { authRouter } = require("./routes/auth.router");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -24,6 +25,7 @@ app.use(morgan("dev"));
 //routers
 app.use("/api/v1/seed", seedRouter);
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/auth", authRouterRouter);
 
 app.get("/test", (req, res) => {
   res.send("Test Secure note app");
